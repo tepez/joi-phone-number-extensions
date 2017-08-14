@@ -153,4 +153,15 @@ describe('phoneNumber', () => {
             });
         });
     });
+
+    it('should support .any methods', () => {
+        const schema = Joi.phoneNumber().valid('+972-52-5555555');
+        expect(schema).toPassValidation('+972-52-5555555', '+972-52-5555555');
+    });
+
+    it('should support .string methods', () => {
+        const schema = Joi.phoneNumber().max(13);
+        expect(schema).toPassValidation('+972525555555', '+972525555555');
+        expect(schema).toFailValidation('+972-52-5555555', '"value" length must be less than or equal to 13 characters long')
+    });
 });
