@@ -17,7 +17,8 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "google-libphonenumber": "^3.0.0"
+    "google-libphonenumber": "^3.0.0",
+    "lodash.findkey": "^4.6.0"
   },
   "peerDependencies": {
     "joi": ">=10.x.x"
@@ -25,8 +26,7 @@
   "devDependencies": {
     "jasmine": "^2.7.0",
     "joi": "10.x.x",
-    "joi-jasmine-helpers": "^0.1.0",
-    "lodash": "^4.17.4"
+    "joi-jasmine-helpers": "^0.1.0"
   },
   "scripts": {
     "test": "node node_modules/jasmine/bin/jasmine.js"
