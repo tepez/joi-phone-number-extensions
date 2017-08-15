@@ -1,7 +1,7 @@
 {
   "name": "joi-phone-number-extensions",
   "description": "Joi extension for dates",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/tepez/joi-phone-number-extensions",
   "repository": "git://github.com/tepez/joi-phone-number-extensions",
   "main": "lib/index.js",
