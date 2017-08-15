@@ -8,7 +8,7 @@
 
 ```
 const BaseJoi = require('joi');
-const JoiPhoneNumberExtensions = require('./');
+const JoiPhoneNumberExtensions = require('joi-phone-number-extensions');
 const Joi = BaseJoi.extend(JoiPhoneNumberExtensions);
 
 const schema = Joi.phoneNumber().defaultRegion('US').type('MOBILE').format('E164');
