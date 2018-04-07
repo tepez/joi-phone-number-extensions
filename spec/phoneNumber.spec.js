@@ -80,6 +80,14 @@ describe('phoneNumber', () => {
                     .toFailValidation('035555555', '"value" must be number of region US');
             });
         });
+
+        it('should accept value via Joi.ref and pass validation', () => {
+            const schema = Joi.object().keys({
+                phone: Joi.phoneNumber().region(Joi.ref('region')),
+                region: Joi.string()
+            });
+            expect(schema).toPassValidation({ phone: '+1 541-754-3010', region: 'US'});
+        });
     });
 
     describe('type', () => {
