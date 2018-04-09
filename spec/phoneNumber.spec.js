@@ -8,7 +8,9 @@ const Joi = BaseJoi.extend(Extension);
 describe('phoneNumber', () => {
     let spec;
     afterEach(() => spec = null);
-    beforeEach(function () { spec = this; });
+    beforeEach(function () {
+        spec = this;
+    });
 
     describe('defaultRegion', () => {
         describe('when given', () => {
@@ -86,7 +88,10 @@ describe('phoneNumber', () => {
                 phone: Joi.phoneNumber().region(Joi.ref('region')),
                 region: Joi.string()
             });
-            expect(schema).toPassValidation({ phone: '+1 541-754-3010', region: 'US'});
+            expect(schema).toPassValidation({
+                phone: '+1 541-754-3010',
+                region: 'US'
+            });
         });
 
         it('should fail validation for Joi.ref with illegal value', () => {
@@ -94,7 +99,10 @@ describe('phoneNumber', () => {
                 phone: Joi.phoneNumber().region(Joi.ref('region')),
                 region: Joi.string()
             });
-            expect(schema).toFailValidation({ phone: '+1 541-754-3010', region: 'USA'}, /"phone" region reference "region" must be one of \[.*UG, US, UY, UZ.*]/);
+            expect(schema).toFailValidation({
+                phone: '+1 541-754-3010',
+                region: 'USA'
+            }, /"phone" region reference "region" must be one of \[.*UG, US, UY, UZ.*]/);
         });
 
         it('should fail validation for Joi.ref pointing to an empty field', () => {
@@ -102,7 +110,9 @@ describe('phoneNumber', () => {
                 phone: Joi.phoneNumber().region(Joi.ref('NONFIELD')),
                 region: Joi.string()
             });
-            expect(schema).toFailValidation({ phone: '+1 541-754-3010'}, /"phone" region reference "NONFIELD" must point to a non empty field/);
+            expect(schema).toFailValidation({
+                phone: '+1 541-754-3010'
+            }, /"phone" region reference "NONFIELD" must point to a non empty field/);
         });
     });
 
@@ -173,7 +183,7 @@ describe('phoneNumber', () => {
         describe('when convert=false', () => {
             it('should fail when number is not already formatted', () => {
                 const schema = Joi.phoneNumber().format('NATIONAL');
-                expect(schema).toFailValidation('+1-541-754-3010', '"value" must be formatted in NATIONAL format', { convert: false })
+                expect(schema).toFailValidation('+1-541-754-3010', '"value" must be formatted in NATIONAL format', {convert: false})
             });
         });
     });
