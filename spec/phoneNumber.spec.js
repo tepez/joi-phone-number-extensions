@@ -80,6 +80,30 @@ describe('phoneNumber', () => {
                     .toFailValidation('035555555', '"value" must be number of region US');
             });
         });
+
+        it('should accept value via Joi.ref and pass validation', () => {
+            const schema = Joi.object().keys({
+                phone: Joi.phoneNumber().region(Joi.ref('region')),
+                region: Joi.string()
+            });
+            expect(schema).toPassValidation({ phone: '+1 541-754-3010', region: 'US'});
+        });
+
+        it('should fail validation for Joi.ref with illegal value', () => {
+            const schema = Joi.object().keys({
+                phone: Joi.phoneNumber().region(Joi.ref('region')),
+                region: Joi.string()
+            });
+            expect(schema).toFailValidation({ phone: '+1 541-754-3010', region: 'USA'}, /"phone" region reference "region" must be one of \[.*UG, US, UY, UZ.*]/);
+        });
+
+        it('should fail validation for Joi.ref pointing to an empty field', () => {
+            const schema = Joi.object().keys({
+                phone: Joi.phoneNumber().region(Joi.ref('NONFIELD')),
+                region: Joi.string()
+            });
+            expect(schema).toFailValidation({ phone: '+1 541-754-3010'}, /"phone" region reference "NONFIELD" must point to a non empty field/);
+        });
     });
 
     describe('type', () => {
