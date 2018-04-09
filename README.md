@@ -59,6 +59,20 @@ schema.validate('+33752961860');
 schema.validate('+1 541-754-3010');
 ```
 
+`regionCode` can also be a `ref` for another property:
+
+```js
+const schema = Joi.object().keys({
+    phone: Joi.phoneNumber().region(Joi.ref('region')),
+    region: Joi.string()
+});
+// valid
+schema.validate({
+    phone: '+33752961860',
+    region: 'FR'
+});
+```
+
 #### `phoneNumber.type(type)`
 
 Require the number to a valid number of given type.
