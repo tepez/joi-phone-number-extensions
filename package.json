@@ -29,7 +29,8 @@
     "joi-jasmine-helpers": "^0.1.0"
   },
   "scripts": {
-    "test": "node node_modules/jasmine/bin/jasmine.js"
+    "test": "node node_modules/jasmine/bin/jasmine.js",
+    "update": "np --no-update --no-yarn"
   },
   "license": "MIT"
 }
