@@ -202,4 +202,49 @@ describe('phoneNumber', () => {
         expect(schema).toPassValidation('+972525555555', '+972525555555');
         expect(schema).toFailValidation('+972-52-5555555', '"value" length must be less than or equal to 13 characters long')
     });
+
+    describe('required', () => {
+        describe('when not required', () => {
+            beforeEach(() => {
+                spec.schema = Joi.phoneNumber()
+                    .format('INTERNATIONAL')
+                    .region('US')
+                    .type('FIXED_LINE');
+            });
+
+            it('should pass validation when given undefined', () => {
+                expect(spec.schema).toPassValidation(undefined, undefined);
+            });
+
+            it('should fail validation when given null', () => {
+                expect(spec.schema).toFailValidation(null, '"value" must be a string');
+            });
+
+            it('should pass validation when given null and null is allowed', () => {
+                expect(spec.schema.allow(null)).toPassValidation(null, null);
+            });
+        });
+
+        describe('when required', () => {
+            beforeEach(() => {
+                spec.schema = Joi.phoneNumber()
+                    .format('INTERNATIONAL')
+                    .region('US')
+                    .type('FIXED_LINE')
+                    .required();
+            });
+
+            it('should fail validation when given undefined', () => {
+                expect(spec.schema).toFailValidation(undefined, '"value" is required');
+            });
+
+            it('should fail validation when given null', () => {
+                expect(spec.schema).toFailValidation(null, '"value" must be a string');
+            });
+
+            it('should pass validation when given null and null is allowed', () => {
+                expect(spec.schema.allow(null)).toPassValidation(null, null);
+            });
+        });
+    });
 });
