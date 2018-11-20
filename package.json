@@ -1,36 +1,35 @@
 {
-  "name": "joi-phone-number-extensions",
-  "description": "Joi extension for dates",
-  "version": "1.1.0",
-  "homepage": "https://github.com/tepez/joi-phone-number-extensions",
-  "repository": "git://github.com/tepez/joi-phone-number-extensions",
-  "main": "lib/index.js",
-  "keywords": [
-    "schema",
-    "validation",
-    "phone",
-    "number",
-    "joi",
-    "extension"
-  ],
-  "engines": {
-    "node": ">=4.0.0"
+  "name": "@tepez/joi-phone-number-extensions",
+  "version": "0.0.0",
+  "description": "A joi extension for validating and formatting phone numbers using google-libphonenumber",
+  "scripts": {
+    "update": "node node_modules/gulp/bin/gulp.js build && node node_modules/np/cli.js --no-publish --no-yarn",
+    "build": "node node_modules/gulp/bin/gulp.js build",
+    "test": "node node_modules/gulp/bin/gulp.js build-unit-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tepez/joi-phone-number-extensions.git"
+  },
+  "author": "Tom Yam <tomyam@tepez.co.il>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tepez/joi-phone-number-extensions/issues"
+  },
+  "homepage": "https://github.com/tepez/joi-phone-number-extensions#readme",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@tepez/joi-jasmine-helpers": "^0.1.0",
+    "@tepez/typescript-build-gulp-tasks": "^3.1.0",
+    "@types/jasmine": "^3.3.0",
+    "gulp": "^3.9.1",
+    "np": "^3.0.4"
   },
   "dependencies": {
-    "google-libphonenumber": "^3.0.0",
-    "lodash.findkey": "^4.6.0"
-  },
-  "peerDependencies": {
-    "joi": ">=10.x.x"
-  },
-  "devDependencies": {
-    "jasmine": "^2.7.0",
-    "joi": "10.x.x",
-    "joi-jasmine-helpers": "^0.1.0"
-  },
-  "scripts": {
-    "test": "node node_modules/jasmine/bin/jasmine.js",
-    "update": "np --no-publish --no-yarn"
-  },
-  "license": "MIT"
+    "@types/google-libphonenumber": "^7.4.17",
+    "@types/joi": "^14.0.0",
+    "@types/node": "^8.10.38",
+    "google-libphonenumber": "^3.1.15"
+  }
 }

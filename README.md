@@ -1,8 +1,14 @@
 # joi-phone-number-extensions
-> A joi extension for validating and formatting phone numbers using [google-libphonenumber](https://github.com/ruimarinho/google-libphonenumber)
+> A joi extension for validating and formatting phone numbers using google-libphonenumber
 
-[![npm version](https://badge.fury.io/js/joi-phone-number-extensions.svg)](http://badge.fury.io/js/joi-phone-number-extensions)
+[![npm version](https://badge.fury.io/js/%40tepez%2Fjoi-phone-number-extensions.svg)](https://badge.fury.io/js/%40tepez%2Fjoi-phone-number-extensions)
 [![Build Status](https://secure.travis-ci.org/tepez/joi-phone-number-extensions.svg?branch=master)](http://travis-ci.org/tepez/joi-phone-number-extensions)
+
+## Install
+
+```
+npm install --save @tepez/joi-phone-number-extensions
+```
 
 ## Usage
 
@@ -105,3 +111,13 @@ Joi.phoneNumber().format('E164').validate('+1-541-754-3010')
 ```
 
 *See tests for more examples*
+
+## TypeScript
+
+```typescript
+import * as Joi from 'joi'
+import Extension, { JoiWithPhoneNumberExtension } from '@tepez/joi-phone-number-extensions'
+
+const ExtendedJoi: JoiWithPhoneNumberExtension = Joi.extend(Extension);
+// Type information for the phoneNumber() method is now available to ExtendedJoi
+```

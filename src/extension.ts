@@ -1,35 +1,36 @@
-'use strict';
-const PhoneNumber = require('google-libphonenumber');
-const findKey = require('lodash.findkey');
+import * as PhoneNumber from 'google-libphonenumber'
+import { PhoneNumberFormat as PNF, PhoneNumberType as PNT, PhoneNumberUtil } from 'google-libphonenumber'
+import * as Joi from 'joi'
+import { Extension, ExtensionBoundSchema } from 'joi'
 
 
-const phoneNumberUtil = PhoneNumber.PhoneNumberUtil.getInstance();
-const PNT = PhoneNumber.PhoneNumberType;
-const PNF = PhoneNumber.PhoneNumberFormat;
-
-function normalizeType(type) {
-    return typeof type === 'string'
-        ? PNT[type]
-        : type;
+interface IFlags {
+    phoneNumberDefaultRegion?: string
+    phoneNumberRegion?: string | Joi.Reference
+    phoneNumberType?: keyof typeof PNT
+    phoneNumberFormat?: keyof typeof PNF
 }
 
-function typesMatch(type1, type2) {
-    type1 = normalizeType(type1);
-    type2 = normalizeType(type2);
+type ExtensionBoundSchemaWithFlags = ExtensionBoundSchema & {
+    _flags: IFlags
+}
 
+const phoneNumberUtil = PhoneNumberUtil.getInstance();
+
+function typesMatch(type1: PNT, type2: PNT): boolean {
     return type1 === type2 ||
         (type1 === PNT.FIXED_LINE_OR_MOBILE && (type2 === PNT.MOBILE || type2 === PNT.FIXED_LINE)) ||
         (type2 === PNT.FIXED_LINE_OR_MOBILE && (type1 === PNT.MOBILE || type1 === PNT.FIXED_LINE));
 }
 
-const formatToString = (format) => findKey(PNF, format);
+export const phoneNumExtensions = function (joi: typeof Joi): Extension {
+    // as any because metadata is not in @types/google-libphonenumber
+    const validRegions: string[] = Object.keys((PhoneNumber as any).metadata.countryToMetadata);
 
-
-module.exports = (joi) => {
     const regionValidation = joi
         .string()
         .uppercase()
-        .only(Object.keys(PhoneNumber.metadata.countryToMetadata));
+        .only(validRegions);
 
     return {
         base: joi.string(),
@@ -38,71 +39,73 @@ module.exports = (joi) => {
             base: 'must be a valid phone number',
             region: 'must be number of region {{region}}',
             emptyFieldRef: 'region reference "{{ref}}" must point to a non empty field',
-            illegalRefRegion: `region reference "{{ref}}" must be one of [${Object.keys(PhoneNumber.metadata.countryToMetadata).join(', ')}]`,
+            illegalRefRegion: `region reference "{{ref}}" must be one of [${validRegions.join(', ')}]`,
             type: 'must be a {{type}} phone number',
-            format: 'must be formatted in {{format}} format'
+            format: 'must be formatted in {{format}} format',
         },
-        coerce(value, state, options) {
+        coerce(this: ExtensionBoundSchemaWithFlags, value, state, options) {
             if (!value) {
                 return value;
             }
 
-            let parsedNumber;
+            const flags = this._flags;
 
-            const requiredRegion = this._flags.phoneNumberRegion;
-            const requiredType = this._flags.phoneNumberType;
-            const requiredFormat = this._flags.phoneNumberFormat;
+            let regionSource: string | Joi.Reference = flags.phoneNumberRegion
+                || flags.phoneNumberDefaultRegion
+                || null;
 
-            const defaultRegion = requiredRegion || this._flags.phoneNumberDefaultRegion || null;
+            let region: string;
 
-            const isRef = joi.isRef(defaultRegion);
-            const region = isRef ? defaultRegion(state.reference || state.parent, options) : defaultRegion;
+            if (joi.isRef(regionSource)) {
+                region = regionSource(state.reference || state.parent, options);
 
-            if (isRef) {
                 if (!region) {
-                    return this.createError('phoneNumber.emptyFieldRef', {ref: defaultRegion.key}, state, options);
+                    return this.createError('phoneNumber.emptyFieldRef', { ref: regionSource.key }, state, options);
                 }
 
                 const regionValidationResult = regionValidation.validate(region);
                 if (regionValidationResult.error) {
-                    return this.createError('phoneNumber.illegalRefRegion', {ref: defaultRegion.key}, state, options);
+                    return this.createError('phoneNumber.illegalRefRegion', { ref: regionSource.key }, state, options);
                 }
+            } else {
+                region = regionSource;
             }
+
+            let parsedNumber;
 
             try {
                 parsedNumber = phoneNumberUtil.parse(value, region);
             } catch (err) {
-                return this.createError('phoneNumber.base', {value}, state, options);
+                return this.createError('phoneNumber.base', { value }, state, options);
             }
 
-
-            if (requiredRegion) {
+            if (flags.phoneNumberRegion) {
                 if (!phoneNumberUtil.isValidNumberForRegion(parsedNumber, region)) {
-                    return this.createError('phoneNumber.region', {value, region: region}, state, options);
+                    return this.createError('phoneNumber.region', { value, region }, state, options);
                 }
             } else if (!phoneNumberUtil.isValidNumber(parsedNumber)) {
-                return this.createError('phoneNumber.base', {value}, state, options);
+                return this.createError('phoneNumber.base', { value }, state, options);
             }
 
-            if (requiredType) {
+            if (flags.phoneNumberType) {
                 const numberType = phoneNumberUtil.getNumberType(parsedNumber);
-                if (!typesMatch(requiredType, numberType)) {
+                if (!typesMatch(PNT[flags.phoneNumberType], numberType)) {
                     const context = {
                         value,
-                        type: requiredType
+                        type: flags.phoneNumberType,
                     };
                     return this.createError('phoneNumber.type', context, state, options);
                 }
             }
 
-            if (requiredFormat) {
-                const formattedNumber = phoneNumberUtil.format(parsedNumber, PNF[requiredFormat]);
+            if (flags.phoneNumberFormat) {
+                const formattedNumber = phoneNumberUtil.format(parsedNumber, PNF[flags.phoneNumberFormat]);
                 if (options.convert) {
                     return formattedNumber;
                 } else if (value !== formattedNumber) {
                     const context = {
                         value,
-                        format: requiredFormat
+                        format: flags.phoneNumberFormat,
                     };
                     return this.createError('phoneNumber.format', context, state, options);
                 }
@@ -115,37 +118,37 @@ module.exports = (joi) => {
                 // region that we are expecting the number to be from
                 name: 'defaultRegion',
                 params: {
-                    defaultRegion: regionValidation
+                    defaultRegion: regionValidation,
                 },
                 description(params) {
                     return `Phone number should be of region ${params.region} if not international`;
                 },
-                setup(params) {
+                setup(this: ExtensionBoundSchemaWithFlags, params) {
                     this._flags.phoneNumberDefaultRegion = params.defaultRegion;
                 },
                 validate(params, value, state, options) {
                     // No-op just to enable description
                     return value;
-                }
+                },
             },
             {
                 name: 'region',
                 params: {
                     region: joi.alternatives([
                         regionValidation,
-                        joi.func().ref()
-                    ]).required()
+                        joi.func().ref(),
+                    ]).required(),
                 },
                 description(params) {
                     return `Phone number should be of region ${params.region}`;
                 },
-                setup(params) {
+                setup(this: ExtensionBoundSchemaWithFlags, params) {
                     this._flags.phoneNumberRegion = params.region;
                 },
                 validate(params, value, state, options) {
                     // No-op just to enable description
                     return value;
-                }
+                },
             },
             {
                 name: 'type',
@@ -154,18 +157,18 @@ module.exports = (joi) => {
                         .string()
                         .uppercase()
                         .only(Object.keys(PNT))
-                        .required()
+                        .required(),
                 },
                 description(params) {
                     return `Phone number should should be a ${params.type} number`;
                 },
-                setup(params) {
+                setup(this: ExtensionBoundSchemaWithFlags, params) {
                     this._flags.phoneNumberType = params.type;
                 },
                 validate(params, value, state, options) {
                     // No-op just to enable description
                     return value;
-                }
+                },
             },
             {
                 name: 'format',
@@ -174,20 +177,20 @@ module.exports = (joi) => {
                         .string()
                         .uppercase()
                         .only(Object.keys(PNF))
-                        .required()
+                        .required(),
                 },
                 description(params) {
                     return `Phone number should be formatted according to ${params.format}`;
                 },
-                setup(params) {
+                setup(this: ExtensionBoundSchemaWithFlags, params) {
                     this._flags.phoneNumberFormat = params.format;
                 },
                 validate(params, value, state, options) {
                     // No-op just to enable description
                     return value;
-                }
-            }
-        ]
+                },
+            },
+        ],
     }
 };
 
