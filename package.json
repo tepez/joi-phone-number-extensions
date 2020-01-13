@@ -1,6 +1,6 @@
 {
   "name": "@tepez/joi-phone-number-extensions",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A joi extension for validating and formatting phone numbers using google-libphonenumber",
   "scripts": {
     "update": "npx gulp build && npx np --no-publish --no-yarn",
