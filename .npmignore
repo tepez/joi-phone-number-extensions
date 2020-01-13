@@ -1,7 +1,3 @@
-/node_modules/
-/.idea/
-/reports/
-/src/
-/tsconfig.json
-/gulpfile.js
-/.travis.yml
+**
+!/dist/**
+!/readme.md

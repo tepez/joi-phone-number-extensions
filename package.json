@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "A joi extension for validating and formatting phone numbers using google-libphonenumber",
   "scripts": {
-    "update": "node node_modules/gulp/bin/gulp.js build && node node_modules/np/cli.js --no-publish --no-yarn",
-    "build": "node node_modules/gulp/bin/gulp.js build",
-    "test": "node node_modules/gulp/bin/gulp.js build-unit-test"
+    "update": "npx gulp build && npx np --no-publish --no-yarn",
+    "build": "npx gulp build",
+    "test": "npx gulp build-unit-test"
   },
   "repository": {
     "type": "git",
@@ -20,11 +20,13 @@
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
   "devDependencies": {
-    "@tepez/joi-jasmine-helpers": "^0.1.0",
-    "@tepez/typescript-build-gulp-tasks": "^3.1.0",
+    "@tepez/joi-jasmine-helpers": "^0.2.1",
+    "@tepez/typescript-build-gulp-tasks": "^6.0.0",
     "@types/jasmine": "^3.3.0",
-    "gulp": "^3.9.1",
-    "np": "^3.0.4"
+    "gulp": "^4.0.2",
+    "@types/gulp": "^4.0.6",
+    "np": "^5.2.1",
+    "@tepez/typescript-common": "^0.2.1"
   },
   "dependencies": {
     "@types/google-libphonenumber": "^7.4.17",

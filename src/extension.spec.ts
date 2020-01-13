@@ -11,8 +11,8 @@ interface ISpec {
 
 describe('phoneNumber', () => {
     let spec: ISpec;
-    afterEach(() => spec = null);
-    beforeEach(function () {
+    afterEach((): void => spec = null);
+    beforeEach(function (this: ISpec) {
         spec = this;
     });
 

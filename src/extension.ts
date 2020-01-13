@@ -126,7 +126,7 @@ export const phoneNumExtensions = function (joi: typeof Joi): Extension {
                 setup(this: ExtensionBoundSchemaWithFlags, params) {
                     this._flags.phoneNumberDefaultRegion = params.defaultRegion;
                 },
-                validate(params, value, state, options) {
+                validate(_params, value, _state, _options) {
                     // No-op just to enable description
                     return value;
                 },
@@ -145,7 +145,7 @@ export const phoneNumExtensions = function (joi: typeof Joi): Extension {
                 setup(this: ExtensionBoundSchemaWithFlags, params) {
                     this._flags.phoneNumberRegion = params.region;
                 },
-                validate(params, value, state, options) {
+                validate(_params, value, _state, _options) {
                     // No-op just to enable description
                     return value;
                 },
@@ -165,7 +165,7 @@ export const phoneNumExtensions = function (joi: typeof Joi): Extension {
                 setup(this: ExtensionBoundSchemaWithFlags, params) {
                     this._flags.phoneNumberType = params.type;
                 },
-                validate(params, value, state, options) {
+                validate(_params, value, _state, _options) {
                     // No-op just to enable description
                     return value;
                 },
@@ -185,7 +185,7 @@ export const phoneNumExtensions = function (joi: typeof Joi): Extension {
                 setup(this: ExtensionBoundSchemaWithFlags, params) {
                     this._flags.phoneNumberFormat = params.format;
                 },
-                validate(params, value, state, options) {
+                validate(_params, value, _state, _options) {
                     // No-op just to enable description
                     return value;
                 },
