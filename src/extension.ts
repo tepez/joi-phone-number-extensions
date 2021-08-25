@@ -1,12 +1,13 @@
+import { assertT } from '@tepez/ts-utils';
 import * as PhoneNumber from 'google-libphonenumber'
 import { PhoneNumberFormat as PNF, PhoneNumberType as PNT, PhoneNumberUtil } from 'google-libphonenumber'
 import * as Joi from 'joi'
-import { Extension, ExtensionBoundSchema } from 'joi'
+import { Err, Extension, ExtensionBoundSchema, Reference, Rules } from 'joi'
 
 
 interface IFlags {
     phoneNumberDefaultRegion?: string
-    phoneNumberRegion?: string | Joi.Reference
+    phoneNumberRegion?: string | Reference
     phoneNumberType?: keyof typeof PNT
     phoneNumberFormat?: keyof typeof PNF
 }
@@ -43,14 +44,14 @@ export const phoneNumExtensions = function (joi: typeof Joi): Extension {
             type: 'must be a {{type}} phone number',
             format: 'must be formatted in {{format}} format',
         },
-        coerce(this: ExtensionBoundSchemaWithFlags, value, state, options) {
+        coerce(this: ExtensionBoundSchemaWithFlags, value: string, state, options): string | Err {
             if (!value) {
                 return value;
             }
 
             const flags = this._flags;
 
-            let regionSource: string | Joi.Reference = flags.phoneNumberRegion
+            let regionSource: string | Reference = flags.phoneNumberRegion
                 || flags.phoneNumberDefaultRegion
                 || null;
 
@@ -114,14 +115,16 @@ export const phoneNumExtensions = function (joi: typeof Joi): Extension {
             return value;
         },
         rules: [
-            {
+            assertT<Rules<{
+                defaultRegion: string
+            }>>({
                 // region that we are expecting the number to be from
                 name: 'defaultRegion',
                 params: {
                     defaultRegion: regionValidation,
                 },
                 description(params) {
-                    return `Phone number should be of region ${params.region} if not international`;
+                    return `Phone number should be of region ${params.defaultRegion} if not international`;
                 },
                 setup(this: ExtensionBoundSchemaWithFlags, params) {
                     this._flags.phoneNumberDefaultRegion = params.defaultRegion;
@@ -130,8 +133,10 @@ export const phoneNumExtensions = function (joi: typeof Joi): Extension {
                     // No-op just to enable description
                     return value;
                 },
-            },
-            {
+            }),
+            assertT<Rules<{
+                region: string | Reference
+            }>>({
                 name: 'region',
                 params: {
                     region: joi.alternatives([
@@ -149,8 +154,10 @@ export const phoneNumExtensions = function (joi: typeof Joi): Extension {
                     // No-op just to enable description
                     return value;
                 },
-            },
-            {
+            }),
+            assertT<Rules<{
+                type: keyof typeof PNT
+            }>>({
                 name: 'type',
                 params: {
                     type: joi
@@ -169,8 +176,10 @@ export const phoneNumExtensions = function (joi: typeof Joi): Extension {
                     // No-op just to enable description
                     return value;
                 },
-            },
-            {
+            }),
+            assertT<Rules<{
+                format: keyof typeof PNF
+            }>>({
                 name: 'format',
                 params: {
                     format: joi
@@ -189,7 +198,7 @@ export const phoneNumExtensions = function (joi: typeof Joi): Extension {
                     // No-op just to enable description
                     return value;
                 },
-            },
+            }),
         ],
     }
 };

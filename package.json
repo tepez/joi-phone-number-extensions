@@ -22,13 +22,14 @@
   "devDependencies": {
     "@tepez/joi-jasmine-helpers": "^0.2.1",
     "@tepez/typescript-build-gulp-tasks": "^6.0.0",
+    "@tepez/typescript-common": "^0.2.1",
+    "@types/gulp": "^4.0.6",
     "@types/jasmine": "^3.3.0",
     "gulp": "^4.0.2",
-    "@types/gulp": "^4.0.6",
-    "np": "^5.2.1",
-    "@tepez/typescript-common": "^0.2.1"
+    "np": "^5.2.1"
   },
   "dependencies": {
+    "@tepez/ts-utils": "^0.1.1",
     "@types/google-libphonenumber": "^7.4.17",
     "@types/joi": "^14.0.0",
     "@types/node": "*",
