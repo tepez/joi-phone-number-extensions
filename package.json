@@ -5,7 +5,10 @@
   "scripts": {
     "update": "npx gulp build && npx np --no-publish --no-yarn",
     "build": "npx gulp build",
-    "test": "npx gulp build-unit-test"
+    "dev": "yarn gulp --color dev-unit-test",
+    "dev-debug": "npx --node-options=--inspect-brk gulp dev-unit-test",
+    "test": "npx gulp build-unit-test",
+    "test-debug": "npx --node-options=--inspect-brk gulp build-unit-test"
   },
   "repository": {
     "type": "git",
@@ -20,19 +23,21 @@
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
   "devDependencies": {
-    "@tepez/joi-jasmine-helpers": "^0.2.1",
-    "@tepez/typescript-build-gulp-tasks": "^6.0.0",
-    "@tepez/typescript-common": "^0.2.1",
-    "@types/gulp": "^4.0.6",
-    "@types/jasmine": "^3.3.0",
+    "@tepez/joi-jasmine-helpers": "^1.0.0",
+    "@tepez/typescript-build-gulp-tasks": "^6.5.1",
+    "@tepez/typescript-common": "^0.2.2",
+    "@types/gulp": "^4.0.9",
+    "@types/jasmine": "^3.9.1",
     "gulp": "^4.0.2",
-    "np": "^5.2.1"
+    "np": "^7.5.0"
   },
   "dependencies": {
+    "@hapi/hoek": "^9.0.0",
+    "@tepez/joi-misc-extensions": "^1.0.0",
     "@tepez/ts-utils": "^0.1.1",
-    "@types/google-libphonenumber": "^7.4.17",
-    "@types/joi": "^14.0.0",
+    "@types/google-libphonenumber": "^7.4.21",
     "@types/node": "*",
-    "google-libphonenumber": "^3.1.15"
+    "google-libphonenumber": "^3.2.24",
+    "joi": "^17.4.2"
   }
 }

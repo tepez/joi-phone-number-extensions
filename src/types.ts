@@ -8,7 +8,7 @@ export interface PhoneNumberSchema extends StringSchema {
 
     region(region: string | Reference): this
 
-    type(type: keyof typeof PNT | string): this
+    numType(type: keyof typeof PNT | string): this
 
     format(format: keyof typeof PNF | string): this
 }
