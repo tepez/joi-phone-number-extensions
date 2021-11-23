@@ -1,4 +1,5 @@
 import { addMatchers } from '@tepez/joi-jasmine-helpers'
+import { ObjectSchema } from 'joi';
 import * as Joi from 'joi'
 import Extension, { JoiWithPhoneNumberExtension, PhoneNumberSchema } from '.'
 
@@ -92,40 +93,39 @@ describe('phoneNumber', () => {
             });
         });
 
-        it('should accept value via Joi.ref and use it for validation', () => {
-            const schema = ExtendedJoi.object().keys({
-                phone: ExtendedJoi.phoneNumber().region(ExtendedJoi.ref('region')),
-                region: ExtendedJoi.string(),
-            });
-            expect(schema).toPassValidation({
-                phone: '+1 541-754-3010',
-                region: 'US',
-            });
-            expect(schema).toFailValidation({
-                phone: '+1 5555555',
-                region: 'US',
-            }, '"phone" must be number of region US');
-        });
+        describe('reference', () => {
+            let objSchema: ObjectSchema;
 
-        it('should fail validation for Joi.ref with illegal value', () => {
-            const schema = ExtendedJoi.object().keys({
-                phone: ExtendedJoi.phoneNumber().region(ExtendedJoi.ref('region')),
-                region: ExtendedJoi.string(),
+            beforeEach(() => {
+                objSchema = ExtendedJoi.object().keys({
+                    phone: ExtendedJoi.phoneNumber().region(ExtendedJoi.ref('region')),
+                    region: ExtendedJoi.string(),
+                })
             });
-            expect(schema).toFailValidation({
-                phone: '+1 541-754-3010',
-                region: 'USA',
-            }, /^region reference "region" must be one of \[.*UA, UG, US, UY, UZ.*]$/);
-        });
 
-        it('should fail validation for Joi.ref pointing to an empty field', () => {
-            const schema = ExtendedJoi.object().keys({
-                phone: ExtendedJoi.phoneNumber().region(ExtendedJoi.ref('NONFIELD')),
-                region: ExtendedJoi.string(),
+            it('should accept value via Joi.ref and use it for validation', () => {
+                expect(objSchema).toPassValidation({
+                    phone: '+1 541-754-3010',
+                    region: 'US',
+                });
+                expect(objSchema).toFailValidation({
+                    phone: '+1 5555555',
+                    region: 'US',
+                }, '"phone" must be number of region US');
             });
-            expect(schema).toFailValidation({
-                phone: '+1 541-754-3010',
-            }, 'region reference "NONFIELD" must point to a non empty field');
+
+            it('should fail validation for Joi.ref with illegal value', () => {
+                expect(objSchema).toFailValidation({
+                    phone: '+1 541-754-3010',
+                    region: 'USA',
+                }, /^region reference "region" must be one of \[.*UA, UG, US, UY, UZ.*]$/);
+            });
+
+            it('should fail validation for Joi.ref pointing to an empty field', () => {
+                expect(objSchema).toFailValidation({
+                    phone: '+1 541-754-3010',
+                }, 'region reference "region" must point to a non empty field');
+            });
         });
     });
 
@@ -261,6 +261,71 @@ describe('phoneNumber', () => {
 
             it('should pass validation when given null and null is allowed', () => {
                 expect(schema.allow(null)).toPassValidation(null, null);
+            });
+        });
+    });
+
+    describe('Hebrew', () => {
+        beforeEach(() => {
+            schema = ExtendedJoi
+                .phoneNumber()
+                .label('ערך')
+                .preferences({
+                    errors: {
+                        language: 'he',
+                    },
+                })
+        });
+
+        it('base', () => {
+            expect(schema).toFailValidation('1', '"ערך" צריך להיות מספר טלפון תקין');
+        });
+
+        it('region', () => {
+            schema = schema.region('US');
+
+            expect(schema).toFailValidation('035555555', '"ערך" צריך להיות מספר טלפון תקין מ-US');
+        });
+
+        it('type', () => {
+            schema = schema.numType('MOBILE');
+
+            expect(schema).toFailValidation('+97235555555', '"ערך" צריך להיות מספר טלפון מסוג MOBILE');
+        });
+
+        it('format', () => {
+            schema = schema.format('NATIONAL');
+
+            expect(schema).toFailValidation('+97235555555', '"ערך" צריך להיות בפורמט של NATIONAL', {
+                convert: false,
+            });
+        });
+
+        describe('reference', () => {
+            let objSchema: ObjectSchema;
+
+            beforeEach(() => {
+                objSchema = ExtendedJoi.object().keys({
+                    phone: ExtendedJoi.phoneNumber().region(ExtendedJoi.ref('region')),
+                    region: ExtendedJoi.string(),
+                }).preferences({
+                    errors: {
+                        language: 'he',
+                    },
+                });
+            });
+
+            it('should fail validation for Joi.ref with illegal value', () => {
+                expect(objSchema).toFailValidation({
+                    phone: '+1 541-754-3010',
+                    region: 'USA',
+                }, /^ההפנייה לאיזור "region" צריכה להוביל לאחד מ-\[.*UA, UG, US, UY, UZ.*]$/);
+            });
+
+            it('should fail validation for Joi.ref pointing to an empty field', () => {
+                expect(objSchema).toFailValidation({
+                    phone: '+1 541-754-3010',
+                }, 'ההפניה לאיזור "region" צריכה להוביל לשדה שאינו ריק');
             });
         });
     });

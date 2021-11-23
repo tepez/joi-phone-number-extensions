@@ -1,9 +1,11 @@
 import { MyReference, TypedExtension, TypedExtensionRule } from '@tepez/joi-misc-extensions';
 import { assertT } from '@tepez/ts-utils';
-import * as PhoneNumber from 'google-libphonenumber'
 import { PhoneNumberFormat as PNF, PhoneNumberType as PNT, PhoneNumberUtil } from 'google-libphonenumber'
 import * as Joi from 'joi'
 import { Reference } from 'joi'
+import { phoneNumberExtensionsEnMessages } from './i18n/en';
+import { validRegions } from './utils';
+import { phoneNumberExtensionsHeMessages } from './i18n/he';
 
 const Assert = require('@hapi/hoek/lib/assert');
 
@@ -36,9 +38,6 @@ const assertUpperCaseString = (name: string, value: any, validValues: string[]):
 }
 
 export const phoneNumExtensions = function (joi: typeof Joi): TypedExtension<IFlags> {
-    // as any because metadata is not in @types/google-libphonenumber
-    const validRegions: string[] = Object.keys((PhoneNumber as any).metadata.countryToMetadata);
-
     const regionValidation = joi
         .string()
         .uppercase()
@@ -52,13 +51,10 @@ export const phoneNumExtensions = function (joi: typeof Joi): TypedExtension<IFl
         type: 'phoneNumber',
         base: joi.string(),
         messages: {
-            'phoneNumber.base': '{{#label}} must be a valid phone number',
-            'phoneNumber.region': '{{#label}} must be number of region {{#region}}',
-            'phoneNumber.emptyFieldRef': 'region reference "{{#ref}}" must point to a non empty field',
-            'phoneNumber.illegalRefRegion': `region reference "{{#ref}}" must be one of [${validRegions.join(', ')}]`,
-            'phoneNumber.type': '{{#label}} must be a {{#type}} phone number',
-            'phoneNumber.format': '{{#label}} must be formatted in {{#format}} format',
-        },
+            ...phoneNumberExtensionsEnMessages,
+            he: phoneNumberExtensionsHeMessages,
+        } as any, // joi types doesn't support languages but it's ok 
+        // https://github.com/sideway/joi/blob/v17.4.2/lib/index.d.ts#L29
         validate(value, helpers) {
             if (!value) {
                 return {
