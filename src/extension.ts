@@ -4,10 +4,8 @@ import { PhoneNumberFormat as PNF, PhoneNumberType as PNT, PhoneNumberUtil } fro
 import * as Joi from 'joi'
 import { Reference } from 'joi'
 import { phoneNumberExtensionsEnMessages } from './i18n/en';
-import { validRegions } from './utils';
 import { phoneNumberExtensionsHeMessages } from './i18n/he';
-
-const Assert = require('@hapi/hoek/lib/assert');
+import { validRegions } from './utils';
 
 
 interface IFlags {
@@ -26,15 +24,16 @@ function typesMatch(type1: PNT, type2: PNT): boolean {
 }
 
 const assertUpperCaseString = (name: string, value: any, validValues: string[]): string => {
-    Assert(value, name, 'is required');
+    if (!value) throw new Error(`${name} is required`)
 
-    Assert(typeof value === 'string', name, 'must be a string');
+    if (typeof value !== 'string') throw new Error(`${name} must be a string`);
 
     const ret = value.toUpperCase();
+    if (!validValues.includes(ret)) {
+        throw new Error(`${name} must be one of ${validValues.join(', ')}`);
+    }
 
-    Assert(validValues.includes(ret), name, 'must be one of', validValues.join(', '));
-
-    return ret as string;
+    return ret;
 }
 
 export const phoneNumExtensions = function (joi: typeof Joi): TypedExtension<IFlags> {
