@@ -2,34 +2,25 @@
   "name": "@tepez/joi-phone-number-extensions",
   "version": "1.2.0",
   "description": "A joi extension for validating and formatting phone numbers using google-libphonenumber",
-  "scripts": {
-    "update": "npx gulp build && npx np --no-publish --no-yarn",
-    "build": "npx gulp build",
-    "dev": "yarn gulp --color dev-unit-test",
-    "dev-debug": "npx --node-options=--inspect-brk gulp dev-unit-test",
-    "test": "npx gulp build-unit-test",
-    "test-debug": "npx --node-options=--inspect-brk gulp build-unit-test"
+  "homepage": "https://github.com/tepez/joi-phone-number-extensions#readme",
+  "bugs": {
+    "url": "https://github.com/tepez/joi-phone-number-extensions/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tepez/joi-phone-number-extensions.git"
   },
-  "author": "Tom Yam <tomyam@tepez.co.il>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/tepez/joi-phone-number-extensions/issues"
-  },
-  "homepage": "https://github.com/tepez/joi-phone-number-extensions#readme",
-  "types": "dist/index.d.ts",
+  "author": "Tom Yam <tomyam@tepez.co.il>",
   "main": "dist/index.js",
-  "devDependencies": {
-    "@tepez/joi-jasmine-helpers": "^1.0.0",
-    "@tepez/typescript-build-gulp-tasks": "^6.5.1",
-    "@tepez/typescript-common": "^0.2.2",
-    "@types/gulp": "^4.0.9",
-    "@types/jasmine": "^3.9.1",
-    "gulp": "^4.0.2",
-    "np": "^7.5.0"
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "npx gulp build",
+    "dev": "yarn gulp --color dev-unit-test",
+    "dev-debug": "npx --node-options=--inspect-brk gulp dev-unit-test",
+    "test": "npx gulp build-unit-test",
+    "test-debug": "npx --node-options=--inspect-brk gulp build-unit-test",
+    "update": "npx gulp build && npx np --no-publish --no-yarn"
   },
   "dependencies": {
     "@hapi/hoek": "^9.0.0",
@@ -39,5 +30,14 @@
     "@types/node": "*",
     "google-libphonenumber": "^3.2.24",
     "joi": "^17.4.2"
+  },
+  "devDependencies": {
+    "@tepez/joi-jasmine-helpers": "^1.0.0",
+    "@tepez/typescript-build-gulp-tasks": "^6.5.1",
+    "@tepez/typescript-common": "^0.2.2",
+    "@types/gulp": "^4.0.9",
+    "@types/jasmine": "^3.9.1",
+    "gulp": "^4.0.2",
+    "np": "^7.5.0"
   }
 }
